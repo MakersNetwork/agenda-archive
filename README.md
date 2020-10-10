@@ -81,3 +81,28 @@ bundle exec rubocop
 - [Ruby style guide](https://github.com/bbatsov/ruby-style-guide)
 - [Rails style guide](https://github.com/bbatsov/rails-style-guide)
 - [JavaScript style guide](https://github.com/airbnb/javascript)
+
+## Deploy
+
+É necessário adicionar o remote da Heroku:
+
+```sh
+git remote set-url origin git@github.com:MakersNetwork/agenda-tratamento-precoce.git
+git remote add heroku https://git.heroku.com/agendamento-vacina.git
+```
+
+Deve ficar parecido com o exemplo abaixo:
+
+``` sh
+git remote -v
+heroku https://git.heroku.com/agendamento-vacina.git (fetch)
+heroku https://git.heroku.com/agendamento-vacina.git (push)
+origin  git@github.com:MakersNetwork/agenda-tratamento-precoce.git (fetch)
+origin  git@github.com:MakersNetwork/agenda-tratamento-precoce.git (push)
+```
+
+Para fazer deploy da aplicaço:
+
+```sh
+git push heroku main
+```

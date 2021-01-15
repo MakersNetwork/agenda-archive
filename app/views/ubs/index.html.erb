@@ -69,8 +69,7 @@
     <a class="btn btn-danger" href=<%= "/ubs/#{@ubs.id}/cancel_all_future_appointments" %>
     onclick="return confirm('Você tem certeza?')">Desativar todos agendamentos futuros</a>
     <a class="btn btn-success" href=<%= "/ubs/#{@ubs.id}/activate_all_future_appointments" %>
-    onclick="return confirm('Você tem certeza?')">Ativar todos agendamentos futuros</a>
-    <br/>
+    onclick="return confirm('Você tem certeza?')">Ativar todos agendamentos futuros</a><br/>
     </p>
   <% else %>
     <p>Nenhum paciente agendou horário até o momento.</p>

@@ -11,8 +11,16 @@
 
   <div class="alert alert-info alert-dismissable mb-5 mt-5" role="alert">
     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-    <h6 class="mb-0" style="text-align: center;">O atendimento somente será realizado para pessoas a partir de 14 anos que apresentem algum destes sintomas: mal-estar leve, coriza, tosse, espirro, dor de cabeça, perda de olfato ou perda de paladar.<br/>
-    Qualquer dúvida, entre em contato com Ligue/Web Saúde por telefone no <strong>3481-5165</strong> ou via mensagem de WhatsApp neste mesmo número.<br/></h6>
+    <h6 class="mb-0" style="text-align: center;">
+      O agendamento somente ocorrerá conforme orientações abaixo:<br/><br/>
+
+      <strong>&middot Somente moradores assintomáticos de Joinville</strong> podem realizar o teste;<br/>
+      <strong>&middot Menores de 2 anos não podem fazer o Teste Rápido</strong>;<br/>
+      <strong>&middot</strong> É obrigatório o <strong>CPF e Cartão SUS (CNS)</strong> para agendar e fazer o teste;<br/>
+      <strong>&middot</strong> Verifique <strong>o número de seu Cartão SUS (CNS)</strong> em <a href="https://conectesus-paciente.saude.gov.br">https://conectesus-paciente.saude.gov.br</a>;<br/>
+      <strong>&middot</strong> Geralmente, os planos de saúde mostram o número do Cartão SUS (CNS) no verso da carteirinha;<br/>
+      <strong>&middot</strong> Caso <strong>não tenha Cartão SUS (CNS)</strong>, dirija-se a uma <strong>Unidade de Saúde</strong> para fazer seu.<br/>
+    </h6>
   </div>
 
   <div class="form-row">
@@ -30,7 +38,14 @@
   <div class="form-row">
     <div class="form-group col-md-4">
       <%= f.label :birth_date, "Data de nascimento" %>
-      <%= f.date_field :birth_date, autofocus: true, autocomplete: "birth_date", required: true, class: "form-control" %>
+      <div class="form-row">
+        <%= f.date_select :birth_date, { start_year: 1900, with_css_classes: true } , autofocus: true, autocomplete: "birth_date", required: true, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-group col-md-4">
+      <%= f.label :sus, "Cartão SUS" %>
+      <%= f.number_field :sus, autofocus: true, autocomplete: "sus", required: false, class: "form-control" %>
     </div>
 
     <div class="form-group col-md-4">

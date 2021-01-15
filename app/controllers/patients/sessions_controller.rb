@@ -10,6 +10,9 @@ class Patients::SessionsController < Devise::SessionsController
       patient.update!(fake_mothers: mother_list)
     end
 
+    # Verifica se o paciente fez agendamento em menos de DAYS_FOR_NEW_APPOINTMENT dias
+    # return render 'patients/appoitment_blocked' if patient.wait_appointment_time?
+
     @mother_list = patient.fake_mothers
     super
   rescue ActionController::ParameterMissing
@@ -65,6 +68,8 @@ class Patients::SessionsController < Devise::SessionsController
     patient.update!(fake_mothers: [], login_attempts: 0)
 
     return redirect_to index_bedridden_path if patient.bedridden?
+
+    # return render 'patients/not_allowed' unless patient.allowed_age?
 
     redirect_to time_slot_path
   end

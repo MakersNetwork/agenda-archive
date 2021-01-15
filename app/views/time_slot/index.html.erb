@@ -1,5 +1,13 @@
 
 <%= render :layout => '/shared/panel' do %>
+  <% if flash[:notice] %>
+    <div class="alert alert-info alert-dismissable" role="alert">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      <h6 class="mb-0">
+        <%= flash[:notice] %>
+      </h6>
+    </div>
+  <% end %>
   <% if @appointment.present? %>
     <div class="container">
       <div class="card">
@@ -27,7 +35,7 @@
               </div>
               <div class="row">
                 <div class="col">
-                  <strong>UBS: </strong><%= @ubs.name %>
+                  <strong>Unidade: </strong><%= @ubs.name %>
                 </div>
               </div>
               <div class="row">
@@ -40,10 +48,20 @@
                   <strong>Telefone: </strong><%= @ubs.phone %>
                 </div>
               </div>
+
+              <p class="h8 mb-12">
+                <br/>Dirija-se até a unidade escolhida com <strong>15 minutos de antecedência</strong>, leve um <strong>documento com foto e seu Cartão SUS (CNS)</strong> e reserve pelo menos <strong>1 hora para o procedimento<strong>.
+              </p>
+
             </div>
           </div>
           <div class="row mt-3">
             <div class="col">
+              <%= button_to "patients/edit", class: "btn btn-primary btn-block", method: :get do %>
+                Alterar meus dados
+              <% end %>
+            </div>
+              <div class="col">
               <%= button_to cancel_time_slot_path(appointment_id: @appointment.id), class: "btn btn-danger btn-block", method: :delete, data: { confirm: "Seu horário será cancelado. Confirmar?" } do %>
                 Cancelar
               <% end %>
@@ -52,12 +70,53 @@
         </div>
       </div>
     </div>
+  <% else %>
+    <div class="row">
+      <div class="col">
+        <h4 class="text-center">Você não possui nenhum agendamento no momento</h4>
+      </div>
+    </div>
 
-    <br/>
-    <p id="notice"><%= notice %></p>
-    <hr>
-    <br/>
+    <div class="row mt-3">
+      <div class="col-2">
+      </div>
+      <div class="col-8">
+        <%= button_to "patients/edit", class: "btn btn-primary btn-block", method: :get do %>
+          Alterar meus dados
+        <% end %>
+      </div>
+      <div class="col-2">
+      </div>
+    </div>
+
   <% end %>
+  <hr>
+
+  <br/>
+  <% if flash[:alert] %>
+    <div class="alert alert-danger alert-dismissable" role="alert">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      <h6 class="mb-0">
+        <%= flash[:alert] %>
+      </h6>
+    </div>
+  <% end %>
+
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      <li class="page-item active <%= "disabled" if @gap_in_days < 1 %>">
+        <a class="page-link" href="?gap_in_days=<%= @gap_in_days - 1 %>" tabindex="-1">&laquo; Dia anterior</a>
+      </li>
+      <li class="page-item active disabled">
+        <a class="page-link" href="#">
+          <%= ApplicationHelper.humanize_date(@current_day) %>
+        </a>
+      </li>
+      <li class="page-item active <%= "disabled" if @gap_in_days >= TimeSlotController::SLOTS_WINDOW_IN_DAYS %>">
+        <a class="page-link" href="?gap_in_days=<%= @gap_in_days + 1 %>" tabindex="-1">Próximo dia &raquo;</a>
+      </li>
+    </ul>
+  </nav>
 
   <% if @time_slots.present? %>
     <div class="container mt-5">
@@ -66,13 +125,15 @@
           <h4>Agendamentos disponíveis:</h4>
           <div class="alert alert-info alert-dismissable" role="alert">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            <h6 class="mb-0">Veja abaixo as unidades que estão com agendamento disponível pelo site. <br/><br/> Escolha a unidade mais próxima de sua casa ou qualquer outra que esteja disponível.</h6>
+            <h6 class="mb-0">
+              <strong>Após escolher</strong> o local, box, dia e hora de seu teste e confirmar, <strong>entre novamente no site para verificar seu agendamento</strong>.
+            </h6>
           </div>
         </div>
       </div>
       <div class="row">
         <div class="col">
-          <% @time_slots.each do |ubs, days| %>
+          <% @time_slots.each do |ubs, slots| %>
             <div id=<%= "ubsId#{ubs.id}Accordion" %>>
               <div class="card">
                 <div class="card-header" id=<%= "ubsId#{ubs.id}" %>>
@@ -82,53 +143,38 @@
                     </button>
                   </h5>
                 </div>
-
                 <div id=<%= "ubsControl#{ubs.id}" %> class="collapse" aria-labelledby=<%= "ubsId#{ubs.id}" %> data-parent=<%= "#ubsId#{ubs.id}Accordion" %>>
                   <div class="card-body">
-                    <% days.each do |day, slots| %>
-                      <% if business_day?(day) %>
-                        <div id=<%= "day#{ubs.id}Id#{day.to_s}Accordion" %>>
-                          <div class="card">
-                            <div class="card-header" id=<%= "day#{ubs.id}Id#{day.to_s}" %>>
-                              <button class="btn btn-link" data-toggle="collapse" data-target=<%= "#day#{ubs.id}Control#{day.to_s}" %> aria-expanded="true" aria-controls=<%= "day#{ubs.id}Control#{day.to_s}" %>>
-                                <%= ApplicationHelper.humanize_date(day) %>
-                              </button>
-                            </div>
-                            <div id=<%= "day#{ubs.id}Control#{day.to_s}" %> class="collapse" aria-labelledby=<%= "day#{ubs.id}Id#{day.to_s}" %> data-parent=<%= "#day#{ubs.id}Id#{day.to_s}Accordion" %>>
-                              <div class="card-body">
-                                <div class="container">
-                                  <% slots.each do |slot| %>
-                                    <div class="row">
-                                      <div class="col align-middle">
-                                        Horário <br /> <%= ApplicationHelper.humanize_time(slot[:slot_start]) %>                                      </div>
-                                      <div class="col text-right">
-                                        <%= button_to @appointment.present? ? 'Substituir' : 'Agendar', schedule_time_slot_path(start_time: slot[:slot_start], ubs_id: ubs.id), class: "btn btn-success" %>
-                                      </div>
-                                    </div>
-                                    <hr/>
-                                  <% end %>
-                                </div>
-                              </div>
-                            </div>
+                    <div class="container">
+                      <% slots.each do |slot| %>
+                        <div class="row">
+                          <div class="col align-middle">
+                            Horário <br /> <%= ApplicationHelper.humanize_time(slot[:slot_start]) %>
+                          </div>
+                          <div class="col text-right">
+                            <%= button_to @appointment.present? ? 'Substituir' : 'Agendar', schedule_time_slot_path(start_time: slot[:slot_start], ubs_id: ubs.id), class: "btn btn-success" %>
                           </div>
                         </div>
-                      <% end%>
-                    <% end %>
+                        <hr/>
+                      <% end %>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            <br/>
           <% end %>
+          <br/>
         </div>
       </div>
     </div>
   <% else %>
-    <h4>Nenhuma vaga disponível no momento!</h4>
+    <h4>Nenhuma vaga disponível para este dia!</h4>
     <div class="alert alert-info alert-dismissable" role="alert">
       <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-      <h6 class="mb-0">Prezado usuário, no momento todas as vagas estão ocupadas.<br/>Mas não se preocupe que diariamente novas vagas são geradas ou as vagas de cancelamentos voltam para o sistema, pedimos que tente novamente no dia seguinte ou mais tarde!
-        <br/></h6>
+      <h6 class="mb-0">
+        Prezado usuário, no momento todas as vagas deste dia estão ocupadas.<br/>
+        Tente acessar os próximos dias para verificar se há agendamento disponível.<br/>
+      </h6>
     </div>
   <% end %>
 <% end %>

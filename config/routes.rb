@@ -4,6 +4,7 @@ Rails.application.routes.draw do
 
   devise_scope :patient do
     root 'home#index'
+    get '/home_teste_rapido', to: 'home#home_teste_rapido'
 
     resource :time_slot do
       get '/', as: :index, to: 'time_slot#index'
@@ -43,4 +44,7 @@ Rails.application.routes.draw do
 
   # FIXME: This is a temp method to allow the unblocking of a patient. We will use this route until we have the super-admin feature
   get 'Y29zaXNhbGVnYWxwb3JmYXZvcm5hb3RlbnRlbGVyCg/:cpf', to: 'home#unblock'
+
+  get 'cadastrar_paciente/:cpf', to: 'home#register_patient'
+
 end

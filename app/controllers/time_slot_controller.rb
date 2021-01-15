@@ -1,9 +1,9 @@
 require_relative './../helpers/time_slot_helper'
-include TimeSlotHelper
+# include TimeSlotHelper
 
 class TimeSlotController < PatientSessionController
 
-  SLOTS_WINDOW_IN_DAYS = 4
+  SLOTS_WINDOW_IN_DAYS = 10
 
   def schedule
     @ubs = Ubs.find(schedule_params[:ubs_id])
@@ -11,13 +11,13 @@ class TimeSlotController < PatientSessionController
 
     Appointment.transaction do
       if Appointment.where(start: start_time, ubs: @ubs).present?
-        flash[:notice] = 'Opa! O horário foi reservado enquanto você escolhia, tente outro!'
+        flash[:alert] = 'Opa! O horário foi reservado enquanto você escolhia, tente outro!'
         redirect_to time_slot_path
 
         return
       end
 
-      current_patient.appointments.destroy_all
+      current_patient.appointments.futures.destroy_all
 
       @appointment = Appointment.create(
         patient: current_patient,
@@ -28,6 +28,10 @@ class TimeSlotController < PatientSessionController
       )
     end
 
+    @patient = Patient.find(current_patient.id)
+    @patient.last_appointment = start_time
+    @patient.save
+
     return render json: @appointment.errors unless @appointment.save
 
     render 'patients/successfull_schedule'
@@ -35,27 +39,38 @@ class TimeSlotController < PatientSessionController
 
   def cancel
     @appointment = Appointment.find(cancel_params[:appointment_id])
-
     @appointment.destroy
+
+    @patient = Patient.find(current_patient.id)
+    @patient.last_appointment = nil
+    @patient.save
 
     redirect_to time_slot_path
   end
 
   def index
-    # FIXME We need to change this relation to has_one or enhance the logic here
-    @appointment = current_patient.appointments.last
+    @appointment = current_patient.current_appointment
     @ubs = @appointment.try(:ubs)
 
-    date_range = build_weekdays_date_range(TimeSlotController::SLOTS_WINDOW_IN_DAYS)
+    @gap_in_days = slot_params[:gap_in_days].to_i || 0
+    @current_day = Time.zone.now + @gap_in_days.days
 
-    @time_slots = Ubs.all.where(active: true).each_with_object({}) do |ubs, memo|
-      memo[ubs] = ubs.available_time_slots(date_range, Time.zone.now)
-      # TODO: Refactor to not include these as available
-      memo.delete(ubs) if memo[ubs].empty?
+    @time_slots = {}
+    unless @gap_in_days < 0 || @current_day.sunday? || @gap_in_days > TimeSlotController::SLOTS_WINDOW_IN_DAYS
+      @time_slots = Ubs.where(active: true).each_with_object({}) do |ubs, memo|
+        next unless ubs.business_day?(@current_day, ubs.open_saturday?)
+
+        day_slots = ubs.available_time_slots_for_day(@current_day, Time.zone.now)
+        memo[ubs] = day_slots if day_slots.any?
+      end
     end
   end
 
   private
+
+  def slot_params
+    params.permit(:gap_in_days)
+  end
 
   def schedule_params
     params.permit(:start_time, :ubs_id)

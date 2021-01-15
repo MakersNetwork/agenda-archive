@@ -3,6 +3,8 @@ class Patient < ApplicationRecord
 
   MAX_LOGIN_ATTEMPTS = 2
 
+  DAYS_FOR_NEW_APPOINTMENT = 30
+
   has_many :appointments, dependent: :destroy
   belongs_to :main_ubs, class_name: 'Ubs'
 
@@ -22,6 +24,10 @@ class Patient < ApplicationRecord
 
   def active_appointments
     appointments.select(&:active?)
+  end
+
+  def current_appointment
+    active_appointments.last
   end
 
   def set_main_ubs
@@ -58,6 +64,12 @@ class Patient < ApplicationRecord
     bedridden == true
   end
 
+  def wait_appointment_time?
+    last_appointment != nil and 
+    last_appointment < Time.zone.now and 
+    Time.zone.now < last_appointment + DAYS_FOR_NEW_APPOINTMENT.days
+  end
+
   def unblock!
     update!(login_attempts: 0)
   end
@@ -76,27 +88,9 @@ class Patient < ApplicationRecord
     now_day = DateTime.now.strftime('%d').to_i
 
     # Older than 60 years old
-    return false if p_year > (now_year - 14) or
-      (p_year == (now_year - 14) and p_month >= now_month and p_day > now_day)
+    return false if p_year > (now_year - 2) or
+      (p_year == (now_year - 2) and p_month >= now_month and p_day > now_day)
 
     return true
   end
-
-  def validate_year
-    p_year = birth_date[0..3].to_i
-    p_month = birth_date[5..6].to_i
-    p_day = birth_date[8..9].to_i
-
-    if p_year < 1850
-      if p_year > 20
-        p_year = p_year + 1900
-      else
-        p_year = p_year + 2000
-      end
-
-      new_birth_date = '%04d-%02d-%02d' % [p_year, p_month, p_day]
-      update!(birth_date: new_birth_date)
-    end
-  end
-
 end

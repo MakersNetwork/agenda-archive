@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_11_010618) do
+ActiveRecord::Schema.define(version: 2020_10_02_042929) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -58,6 +58,9 @@ ActiveRecord::Schema.define(version: 2020_05_11_010618) do
     t.bigint "main_ubs_id"
     t.boolean "chronic"
     t.integer "target_audience"
+    t.string "public_place"
+    t.string "place_number"
+    t.datetime "last_appointment"
     t.index ["cpf"], name: "index_patients_on_cpf", unique: true
     t.index ["main_ubs_id"], name: "index_patients_on_main_ubs_id"
   end
@@ -77,6 +80,11 @@ ActiveRecord::Schema.define(version: 2020_05_11_010618) do
     t.string "address", default: ""
     t.string "cnes"
     t.boolean "active", default: false
+    t.boolean "open_saturday"
+    t.string "saturday_shift_start"
+    t.string "saturday_break_start"
+    t.string "saturday_break_end"
+    t.string "saturday_shift_end"
     t.index ["cnes"], name: "index_ubs_on_cnes", unique: true
     t.index ["user_id"], name: "index_ubs_on_user_id"
   end

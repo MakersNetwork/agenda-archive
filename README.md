@@ -1,4 +1,7 @@
-# Agenda de Tratamento Precoce
+# Agenda Saúde
+
+**Agenda Saúde** é um projeto de código aberto desenvolvido de forma colaborativa para fornecer
+um sistema de agendamento de vacinação e exames de COVID-19 para a prefeitura de Joinville.
 
 - [Dependências](#dependencias)
 - [Desenvolvimento](#desenvolvimento)
@@ -36,6 +39,8 @@ Depois de clonar o repositório, você pode executar o seguinte na pasta de orig
 docker-compose up
 ```
 
+E acesse no ambiente local [http://localhost:4000](http://localhost:4000).
+
 **Instalando as dependências manualmente**
 
 Caso você queira instalar manualmente todas as dependências no seu ambiente, precisará
@@ -55,7 +60,7 @@ cp config/database.yml.example config/database.yml
 bin/rails db:setup
 ```
 
-E acesse no ambiente local [http://localhost:3000](http://localhost:3000):
+E acesse no ambiente local [http://localhost:4000](http://localhost:4000):
 
 ```sh
 bundle exec rails serve
@@ -87,18 +92,18 @@ bundle exec rubocop
 É necessário adicionar o remote da Heroku:
 
 ```sh
-git remote set-url origin git@github.com:MakersNetwork/agenda-tratamento-precoce.git
-git remote add heroku https://git.heroku.com/agendamento-vacina.git
+git remote set-url origin git@github.com:MakersNetwork/agenda-saude.git
+git remote add heroku https://git.heroku.com/agendamento-covid.git
 ```
 
 Deve ficar parecido com o exemplo abaixo:
 
 ``` sh
 git remote -v
-heroku https://git.heroku.com/agendamento-vacina.git (fetch)
-heroku https://git.heroku.com/agendamento-vacina.git (push)
-origin  git@github.com:MakersNetwork/agenda-tratamento-precoce.git (fetch)
-origin  git@github.com:MakersNetwork/agenda-tratamento-precoce.git (push)
+heroku https://git.heroku.com/agendamento-covid.git (fetch)
+heroku https://git.heroku.com/agendamento-covid.git (push)
+origin  git@github.com:MakersNetwork/agenda-saude.git (fetch)
+origin  git@github.com:MakersNetwork/agenda-saude.git (push)
 ```
 
 Para fazer deploy da aplicaço:

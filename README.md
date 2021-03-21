@@ -1,4 +1,4 @@
-# Agenda de Tratamento Precoce
+# Agenda Archive
 
 - [Dependências](#dependencias)
 - [Desenvolvimento](#desenvolvimento)
@@ -87,7 +87,7 @@ bundle exec rubocop
 É necessário adicionar o remote da Heroku:
 
 ```sh
-git remote set-url origin git@github.com:MakersNetwork/agenda-tratamento-precoce.git
+git remote set-url origin git@github.com:MakersNetwork/agenda-archive.git
 git remote add heroku https://git.heroku.com/agendamento-vacina.git
 ```
 
@@ -97,8 +97,8 @@ Deve ficar parecido com o exemplo abaixo:
 git remote -v
 heroku https://git.heroku.com/agendamento-vacina.git (fetch)
 heroku https://git.heroku.com/agendamento-vacina.git (push)
-origin  git@github.com:MakersNetwork/agenda-tratamento-precoce.git (fetch)
-origin  git@github.com:MakersNetwork/agenda-tratamento-precoce.git (push)
+origin  git@github.com:MakersNetwork/agenda-archive.git (fetch)
+origin  git@github.com:MakersNetwork/agenda-archive.git (push)
 ```
 
 Para fazer deploy da aplicaço:
